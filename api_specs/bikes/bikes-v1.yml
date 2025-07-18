@@ -1,0 +1,312 @@
+openapi: 3.0.3
+info:
+  title: bikes-v1
+  description: An API to manage a database of bikes and bike Owners.
+  version: 1.0.0
+
+paths:
+  /:
+    get:
+      tags:
+        - bikes
+      summary: Get bikes
+      description: Gets a collection of bikes from the server
+      parameters:
+        - $ref: '#/components/parameters/field_groups'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/per_page'
+        - $ref: '#/components/parameters/make'
+        - $ref: '#/components/parameters/model'
+        - $ref: '#/components/parameters/color'
+      responses:
+        '200':
+          description: Success - A collection of bikes
+          headers:
+            Link:
+              description: Page link values delimited by a comma. Possible rel values are next, last, first, prev.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/bike'
+              examples:
+                example-1:
+                  $ref: '#/components/examples/Getbikes'
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error405'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error503'
+      operationId: Getbikes
+
+    post:
+      tags:
+        - bikes
+      summary: Create bike
+      description: Creates a new bike in the collection
+      requestBody:
+        description: Fields below are accepted for bike creation
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/update_bike'
+            examples:
+              example-1:
+                value:
+                  owner_ids:
+                    - ef7d274e-d5e5-11e7-9296-cec278b6b50a
+                  make: Harley
+                  model: Harley-Davidson
+                  color: Silver
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bike'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error403'
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error405'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error503'
+      operationId: Createbike
+
+  /{bike_id}:
+    get:
+      tags:
+        - bikes
+      summary: Get bike by ID
+      description: Gets a single bike from the collection by ID
+      parameters:
+        - name: bike_id
+          in: path
+          description: ID for the bike
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success - An instance of a bike
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bike'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error403'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error405'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error503'
+      operationId: GetbikeByID
+
+components:
+  parameters:
+    field_groups:
+      name: field_groups
+      in: query
+      description: Field groupings
+      required: false
+      schema:
+        type: string
+    page:
+      name: page
+      in: query
+      description: Page number
+      required: false
+      schema:
+        type: integer
+    per_page:
+      name: per_page
+      in: query
+      description: Items per page
+      required: false
+      schema:
+        type: integer
+    make:
+      name: make
+      in: query
+      description: Bike make
+      required: false
+      schema:
+        type: string
+    model:
+      name: model
+      in: query
+      description: Bike model
+      required: false
+      schema:
+        type: string
+    color:
+      name: color
+      in: query
+      description: Bike color
+      required: false
+      schema:
+        type: string
+
+  schemas:
+    bike:
+      type: object
+      properties:
+        id:
+          type: string
+        owner_ids:
+          type: array
+          items:
+            type: string
+        make:
+          type: string
+        model:
+          type: string
+        color:
+          type: string
+
+    update_bike:
+      type: object
+      properties:
+        owner_ids:
+          type: array
+          items:
+            type: string
+        make:
+          type: string
+        model:
+          type: string
+        color:
+          type: string
+
+    Error400:
+      type: object
+      properties:
+        message:
+          type: string
+    Error401:
+      type: object
+      properties:
+        message:
+          type: string
+    Error403:
+      type: object
+      properties:
+        message:
+          type: string
+    Error404:
+      type: object
+      properties:
+        message:
+          type: string
+    Error405:
+      type: object
+      properties:
+        message:
+          type: string
+    Error500:
+      type: object
+      properties:
+        message:
+          type: string
+    Error503:
+      type: object
+      properties:
+        message:
+          type: string
+
+  examples:
+    Getbikes:
+      summary: Sample bike list
+      value:
+        - id: bike-123
+          owner_ids: ["user-1"]
+          make: Yamaha
+          model: MT-15
+          color: Black
+        - id: bike-124
+          owner_ids: ["user-2"]
+          make: Ducati
+          model: Monster
+          color: Red
